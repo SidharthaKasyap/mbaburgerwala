@@ -1,5 +1,5 @@
-import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import passport from "passport";
 import { User } from "../models/User.js";
 
 export const connectPassport = () => {
@@ -11,7 +11,7 @@ export const connectPassport = () => {
         callbackURL: process.env.GOOGLE_CALLBACK_URL,
       },
       async function (accessToken, refreshToken, profile, done) {
-        const user = User.findOne({
+        const user = await User.findOne({
           googleId: profile.id,
         });
 
@@ -30,12 +30,13 @@ export const connectPassport = () => {
     )
   );
 
+
   passport.serializeUser((user, done) => {
-    done(null, user.id);
+    done(null, user._id);
   });
 
   passport.deserializeUser(async (id, done) => {
-    const user = User.findById(id);
+    const user = await User.findById(id);
     done(null, user);
   });
 };
